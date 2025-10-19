@@ -1,9 +1,10 @@
 "use client";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 
 export default function Login() {
   const { data: session } = useSession();
-  console.log(session, 'session')
+
+  console.log({session}, 'session');
 
   if (session) {
     return (

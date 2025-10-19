@@ -1,43 +1,67 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { providerAuthUrlApi } from "@/constants/apiEndPoints";
+import axios from "axios";
+import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 
 const GITHUB_ID = process.env.GITHUB_ID!;
 const GITHUB_SECRET = process.env.GITHUB_SECRET!;
-// const BACKEND_API_URL = process.env.BACKEND_API_URL!;
 
-export const authOptions : NextAuthOptions = {
-    providers: [
-        GithubProvider({
-            clientId: GITHUB_ID,
-            clientSecret: GITHUB_SECRET,
-        })
-    ],
-    secret: process.env.NEXTAUTH_SECRET,
-    session: {
-        strategy: "jwt"
+export const authOptions: NextAuthOptions = {
+  providers: [
+    GithubProvider({
+      clientId: GITHUB_ID,
+      clientSecret: GITHUB_SECRET,
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.user = user;
+        // token.role
+      }
+      if (account) {
+        token.user.provider = account.provider;
+        token.user.provider_account_id = account.providerAccountId;
+      }
+      return token;
     },
-    callbacks: {
-        async jwt({ token, user, account }) {
-            console.log({token, user, account}, 'jwt');
-            if (user) {
-                token.user = user;
-                // token.role 
-            }
-            return token;
-        },
-        async session({session, token}) {
-            console.log({session, token}, 'session');
-            return session;
-        },
+    async session({ session, token }) {
+      if (token.user) {
+        session.user = token.user;
+      }
+      return session;
     },
-    events: {
-        signIn: async ({user, account, profile, isNewUser}) => {
-            // asffasf...
-            console.log({user, account, profile, isNewUser}, 'event');
-        }
+  },
+  events: {
+    signIn: async ({ user, account }) => {
+      // asffasf...
+      const objToSend : any = {};
+      const toKeep = [ ['provider', 'provider'], ['providerAccountId', 'provider_account_id'], ['access_token', 'access_token'], ['refresh_token', 'refresh_token'], ['access_token_expires_at', 'access_token_expires_at']];
+      toKeep.forEach((arr : any) => {
+        const accountKey = arr[0];
+        const objToSendKey = arr[1];
+        if (accountKey === 'provider') 
+          account[accountKey] = account[accountKey].toUpperCase();
+ 
+        objToSend[objToSendKey] = account[accountKey];
+      })
+      try {
+          await axios.post(providerAuthUrlApi, {
+            user,
+            account : objToSend,
+          });
+
+      } catch (error) {
+        console.log(error, "error while signIn");
+      }
     },
-    pages: {
-        signIn: "/auth/signin",
-    },
-    debug: process.env.NODE_ENV === 'development'
-}
+  },
+  pages: {
+    signIn: "/auth/signin",
+  },
+  debug: process.env.NODE_ENV === "development",
+};
