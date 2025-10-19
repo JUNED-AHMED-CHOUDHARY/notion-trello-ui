@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviders from "@/providers/SessionProviders";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,14 @@ export default function RootLayout({
       >
         <SessionProviders>
           {children}
+
+                    {/* Microsoft Clarity */}
+          {process.env.NODE_ENV === "production" && (
+            <Script
+              src={`https://www.clarity.ms/tag/${process.env.MS_CLARITY_PROJECT_ID}`}
+              strategy="afterInteractive" // <-- loads after hydration
+            />
+          )}
         </SessionProviders>
       </body>
     </html>
