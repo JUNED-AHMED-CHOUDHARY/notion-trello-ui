@@ -5,7 +5,7 @@ export default function Login() {
   const { data: session } = useSession();
 
   console.log({session}, 'session');
-
+  console.log(process.env.NEXTAUTH_URL, ';asfasf')
   if (session) {
     return (
       <div>
