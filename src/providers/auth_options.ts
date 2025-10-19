@@ -19,15 +19,16 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
+      const taken : any = token;
       if (user) {
-        token.user = user;
+        taken.user = user;
         // token.role
       }
       if (account) {
-        token.user.provider = account.provider;
-        token.user.provider_account_id = account.providerAccountId;
+        taken.user.provider = account.provider;
+        taken.user.provider_account_id = account.providerAccountId;
       }
-      return token;
+      return taken;
     },
     async session({ session, token }) {
       if (token.user) {
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    signIn: async ({ user, account }) => {
+    signIn: async ({ user, account } : {account: any, user : any}) => {
       // asffasf...
       const objToSend : any = {};
       const toKeep = [ ['provider', 'provider'], ['providerAccountId', 'provider_account_id'], ['access_token', 'access_token'], ['refresh_token', 'refresh_token'], ['access_token_expires_at', 'access_token_expires_at']];
