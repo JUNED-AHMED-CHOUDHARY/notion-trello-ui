@@ -3,11 +3,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Login() {
   const { data: session } = useSession() as any;
-
-  console.log({session},  process.env.NEXT_PUBLIC_NEXTAUTH_URL,'sessioiyan');
-  const a : any = {};
-  // eslint-disable-next-line
-  console.log(a.v.r.s, 'asf');
   if (session) {
     return (
       <div>
