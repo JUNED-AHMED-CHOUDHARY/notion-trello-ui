@@ -1,4 +1,4 @@
-import { providerAuthUrlApi } from "@/constants/apiEndPoints";
+import { getJWTTokenApiUrl, providerAuthUrlApi } from "@/constants/apiEndPoints";
 import axios from "axios";
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
@@ -22,6 +22,11 @@ export const authOptions: NextAuthOptions = {
       const taken : any = token;
       if (user) {
         taken.user = user;
+        const {data} = await axios.post(getJWTTokenApiUrl, {
+          email: taken?.user?.email,
+          name: taken?.user?.name,
+        });
+        taken.user.token = data.token;
         // token.role
       }
       if (account) {
@@ -51,10 +56,12 @@ export const authOptions: NextAuthOptions = {
         objToSend[objToSendKey] = account[accountKey];
       })
       try {
-          await axios.post(providerAuthUrlApi, {
+          const {data} = await axios.post(providerAuthUrlApi, {
             user,
             account : objToSend,
           });
+
+          return data?.data;
 
       } catch (error) {
         console.log(error, "error while signIn");
