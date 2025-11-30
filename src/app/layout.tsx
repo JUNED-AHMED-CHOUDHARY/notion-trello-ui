@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviders from "@/providers/SessionProviders";
 import AnalyticsScripts from "@/components/utility/AnalyticsScripts";
+import ThemeDataProvider from "@/providers/nextThemeProvider";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,17 +27,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProviders>
-          {children}
-
-          {process.env.NODE_ENV === "production" && (
-            <AnalyticsScripts  clarityProjectId={process.env.MS_CLARITY_PROJECT_ID} />
-          )} 
-        </SessionProviders>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ThemeDataProvider>
+            <SessionProviders>
+              {children}
+              {process.env.NODE_ENV === "production" && (
+                <AnalyticsScripts  clarityProjectId={process.env.MS_CLARITY_PROJECT_ID} />
+              )} 
+            </SessionProviders>
+          </ThemeDataProvider>
+        </NextThemesProvider>
       </body>
     </html>
   );
