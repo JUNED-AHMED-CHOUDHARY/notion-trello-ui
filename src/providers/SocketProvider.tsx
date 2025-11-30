@@ -1,6 +1,6 @@
 "use client"
 
-import { closeSocket, reCreateSocket, SocketInstance } from "@/lib/socket"
+import { closeSocket, createOrGetSocket, SocketInstance } from "@/lib/socket"
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 // import { Socket as IoSocket } from "socket.io-client"
@@ -20,17 +20,45 @@ export const useSocketContext = () => useContext(SocketContext);
 export default function SocketProvider({token, children}: SocketProviderProps) {
     const memoToken = useMemo(() => typeof token === 'string' ? token : undefined, [token]);
     const [socket, setSocket] = useState<SocketInstance>(null);
+    
     useEffect(() => {
-        const s = reCreateSocket({ token: memoToken });
+        if (!memoToken) return;
+        
+        // Use createOrGetSocket instead of reCreateSocket to avoid destroying existing connections
+        const s = createOrGetSocket({ token: memoToken });
         if (!s.connected) s.connect();
         setSocket(s);
 
+        // Handle page visibility changes to maintain connection
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                // Page became visible, ensure socket is connected
+                if (s && !s.connected) {
+                    console.log('Page visible, reconnecting socket...');
+                    s.connect();
+                }
+            }
+        };
 
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Don't close socket on unmount - let it persist for tab switching
         return () => {
-            closeSocket();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            // Only set socket to null, don't close the actual connection
             setSocket(null);
         }
 
+    }, [memoToken]);
+    
+    // Close socket only when component is completely destroyed (e.g., logout)
+    useEffect(() => {
+        return () => {
+            // This will only run when the component is completely unmounted
+            if (!memoToken) {
+                closeSocket();
+            }
+        };
     }, [memoToken]);
 
     return <SocketContext.Provider value={{socket}}>
