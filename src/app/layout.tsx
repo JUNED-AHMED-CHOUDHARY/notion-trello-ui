@@ -5,6 +5,7 @@ import SessionProviders from "@/providers/SessionProviders";
 import AnalyticsScripts from "@/components/utility/AnalyticsScripts";
 import ThemeDataProvider from "@/providers/nextThemeProvider";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import ReduxProvider from "@/providers/ReduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,21 +32,23 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextThemesProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ThemeDataProvider>
+        <ReduxProvider>
+          <NextThemesProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
             <SessionProviders>
-              {children}
-              {process.env.NODE_ENV === "production" && (
-                <AnalyticsScripts  clarityProjectId={process.env.MS_CLARITY_PROJECT_ID} />
-              )} 
+              <ThemeDataProvider>
+                {children}
+                {process.env.NODE_ENV === "production" && (
+                  <AnalyticsScripts clarityProjectId={process.env.MS_CLARITY_PROJECT_ID}/>
+                )}
+              </ThemeDataProvider>
             </SessionProviders>
-          </ThemeDataProvider>
-        </NextThemesProvider>
+          </NextThemesProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
