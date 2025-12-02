@@ -41,12 +41,13 @@ export default function SocketProvider({token, children}: SocketProviderProps) {
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-
+        localStorage.setItem("access_token", memoToken);
         // Don't close socket on unmount - let it persist for tab switching
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             // Only set socket to null, don't close the actual connection
             setSocket(null);
+            if (localStorage.getItem("access_token")) localStorage.removeItem("access_token");
         }
 
     }, [memoToken]);
