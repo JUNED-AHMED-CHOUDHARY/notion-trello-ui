@@ -2,7 +2,6 @@ import { getJWTTokenApiUrl, providerAuthUrlApi } from "@/constants/apiEndPoints"
 import axios from "axios";
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import { cookies } from "next/headers";
 
 const GITHUB_ID = process.env.GITHUB_ID!;
 const GITHUB_SECRET = process.env.GITHUB_SECRET!;
@@ -61,14 +60,7 @@ export const authOptions: NextAuthOptions = {
             user,
             account : objToSend,
           });
-          const cookieStore = await cookies();
-          cookieStore.set("access_token", user?.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 3, // 3 days
-            // path: '/',
-          });
+
           return data?.data;
 
       } catch (error) {
