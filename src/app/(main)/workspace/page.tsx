@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import ListWorkspace from "@/components/workspace/ListWorkspace";
 import { authOptions } from "@/providers/auth_options";
 import { getServerSession } from "next-auth";
+import CreateFirstWorkspace from "@/components/workspace/CreateFirstWorkspace";
 
 export default async function WorkspacePage() {
   const session : any = await getServerSession(authOptions);
@@ -14,7 +15,9 @@ export default async function WorkspacePage() {
     redirect('/error');
   }
   if (!response) redirect('/');
-
+  
   const workspace = response.data?.data;
-  return workspace.length > 0 ? <ListWorkspace workspaces={workspace} user={session?.user} /> : <>Kachu nahi hai bee....</>;
+  
+  return workspace.length > 0 ? <ListWorkspace workspaces={workspace} user={session?.user} /> : 
+    <CreateFirstWorkspace/>
 }

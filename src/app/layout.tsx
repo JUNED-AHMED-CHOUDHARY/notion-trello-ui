@@ -6,6 +6,7 @@ import AnalyticsScripts from "@/components/utility/AnalyticsScripts";
 import ThemeDataProvider from "@/providers/nextThemeProvider";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import ReduxProvider from "@/providers/ReduxProvider";
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
           >
             <SessionProviders>
               <ThemeDataProvider>
+                 <Toaster />
                 {children}
                 {process.env.NODE_ENV === "production" && (
                   <AnalyticsScripts clarityProjectId={process.env.MS_CLARITY_PROJECT_ID}/>

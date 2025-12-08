@@ -7,14 +7,17 @@ import { timeAgo } from "@/lib/globalUtility";
 import { useRouter } from "next/navigation";
 import { ThemeColorToggle, ThemeModeToggle } from "../theme/ThemeModeToggle";
 import UserDropdownMenu from "../user/UserDropdown";
+import CreateWorkspace from "./CreateWorkspaceComponent";
+import CreateWorkspaceComponent from "./CreateWorkspaceComponent";
 
 interface ListWorkspaceProps {
   workspaces: WorkspaceDataInPage[];
   user: any;
+  onWorkspaceAdded?: (newWorkspace: any) => void;
 }
 const columnHelper = createColumnHelper<WorkspaceDataInPage>();
 
-function ListWorkspace({ workspaces, user }: ListWorkspaceProps) {
+function ListWorkspace({ workspaces, user, onWorkspaceAdded }: ListWorkspaceProps) {
   const column = [
     columnHelper.accessor("name", {
       header: "Name",
@@ -57,7 +60,7 @@ function ListWorkspace({ workspaces, user }: ListWorkspaceProps) {
         <p className="text-primary font-bold text-3xl">
           Select or Create new Worksapce :-{" "}
         </p>
-        <p>create button here</p>
+        <CreateWorkspaceComponent/>
       </div>
       <DataTable columns={column} data={workspaces} onRowClick={onRowClick} />
     </div>
