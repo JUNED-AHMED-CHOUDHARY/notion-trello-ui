@@ -1,7 +1,5 @@
-// import { baseUrl } from "@/constants/apiEndPoints";
 import { baseUrl } from "@/constants/apiEndPoints";
 import defaultAxios from "axios";
-import { cookies } from "next/headers";
 
 // This function works for both client and server
 async function getAccessToken(): Promise<string | null> {
@@ -12,6 +10,7 @@ async function getAccessToken(): Promise<string | null> {
     
     // Server-side: use cookies through dynamic import
     try {
+        const { cookies } = await import("next/headers");
         const cookieStore = await cookies();
         const tokenCookie = cookieStore.get("access_token");
         return tokenCookie?.value || null;
