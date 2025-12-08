@@ -14,7 +14,7 @@ export let currentToken: string | undefined;
 
 
 export function createOrGetSocket(opts: { token?: string; path?: string; url?: string }) {
-    const { token, path = "/socket.io", url = typeof window !== "undefined" ? process.env.NEXT_PUBLIC_SOCKET_URL || window.location.origin : "" } = opts;
+    const { token, path = "/socket.io", url = typeof window !== "undefined" ? process.env.NEXT_PUBLIC_BACEND_URL || window.location.origin : "" } = opts;
 
     if (!socketInstance) {
         socketInstance = io(url, {
